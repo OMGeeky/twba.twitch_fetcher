@@ -3372,7 +3372,6 @@ dependencies = [
 [[package]]
 name = "twba-twitch-data"
 version = "0.3.0"
-source = "git+https://github.com/OMGeeky/twitch_data.git#908cbae28ff0c7b13e00a942955776c1c0e14707"
 dependencies = [
  "anyhow",
  "async-recursion",
@@ -3396,7 +3395,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "twitch-fetcher"
+name = "twba-twitch-fetcher"
 version = "0.1.0"
 dependencies = [
  "anyhow",

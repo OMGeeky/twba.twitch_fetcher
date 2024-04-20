@@ -56,16 +56,16 @@ impl<'a> FetcherClient<'a> {
             .await
             .map_err(FetcherError::GetVideosError)?;
         for video in videos {
-            info!("Adding video: {} to the database", video.title);
             let existing_video_found = Videos::find()
                 .filter(VideosColumn::TwitchId.eq(video.id.to_string()))
                 .one(&self.db)
-                .await
-                .is_ok();
+                .await?
+                .is_some();
             if existing_video_found {
                 info!("Video with id: {} already exists in the database", video.id);
                 continue;
             }
+            info!("Adding video: {} to the database", video.title);
 
             ActiveModel {
                 id: ActiveValue::NotSet,
@@ -74,7 +74,7 @@ impl<'a> FetcherClient<'a> {
                 user_id: ActiveValue::Set(user.id),
                 created_at: ActiveValue::Set(video.created_at.to_rfc3339()),
                 youtube_id: ActiveValue::NotSet,
-                youtube_playlist_name: ActiveValue::NotSet,
+                youtube_playlist_name: ActiveValue::Set("".to_string()),
                 youtube_preview_image_url: ActiveValue::NotSet,
                 youtube_playlist_id: ActiveValue::NotSet,
                 duration: ActiveValue::Set(video.duration as i32),
