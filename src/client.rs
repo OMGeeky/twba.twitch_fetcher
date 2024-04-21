@@ -2,7 +2,7 @@ use crate::prelude::*;
 use twba_backup_config::Conf;
 use twba_local_db::entities::users::Model;
 use twba_local_db::entities::videos::ActiveModel;
-use twba_local_db::prelude::{Status, Users, UsersColumn, Videos, VideosColumn, VideosModel};
+use twba_local_db::prelude::{Status, Users, UsersColumn, Videos, VideosColumn};
 use twba_local_db::re_exports::sea_orm::{
     ActiveModelTrait, ActiveValue, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter,
 };
