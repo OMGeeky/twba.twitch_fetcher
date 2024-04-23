@@ -4,15 +4,11 @@ pub mod prelude;
 use crate::prelude::*;
 use twba_backup_config::prelude::Config;
 use twba_backup_config::Conf;
+use twba_common::{get_config, init_tracing};
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    tracing_subscriber::fmt()
-        .with_max_level(tracing::Level::INFO)
-        .with_env_filter(
-            "sea_orm=warn,sea_orm_migration=warn,sqlx=warn,twba_twitch_fetcher=trace,twba_local_db=warn,twba_twitch_data=info,twba_downloader_config=info,twba_backup_config=info,other=warn",
-        )
-        .init();
+    let _guard = init_tracing("twba_twitch_fetcher");
     info!("Hello, world!");
 
     run().await?;
@@ -22,13 +18,7 @@ async fn main() -> Result<()> {
 }
 
 async fn run() -> Result<()> {
-    let conf = Conf::builder()
-        .env()
-        .file("./settings.toml")
-        .file(shellexpand::tilde("~/twba/config.toml").into_owned())
-        .file(std::env::var("TWBA_CONFIG").unwrap_or_else(|_| "~/twba/config.toml".to_string()))
-        .load()
-        .map_err(|e| FetcherError::LoadConfig(e.into()))?;
+    let conf = get_config();
 
     trace!("Opening database");
     let db = twba_local_db::open_database(Some(&conf.db_url)).await?;

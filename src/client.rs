@@ -5,6 +5,7 @@ use twba_local_db::entities::videos::ActiveModel;
 use twba_local_db::prelude::{Status, Users, UsersColumn, Videos, VideosColumn};
 use twba_local_db::re_exports::sea_orm::{
     ActiveModelTrait, ActiveValue, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter,
+    QuerySelect,
 };
 use twba_twitch_data::TwitchClient;
 
@@ -28,6 +29,7 @@ impl<'a> FetcherClient<'a> {
     pub(crate) async fn fetch_new_videos(&self) -> Result<()> {
         let users = Users::find()
             .filter(UsersColumn::Active.eq(true))
+            .limit(self.conf.max_items_to_process)
             .all(&self.db)
             .await?;
         info!("Fetching videos for {} users", users.len());
