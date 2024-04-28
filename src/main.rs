@@ -2,8 +2,6 @@ mod client;
 pub mod errors;
 pub mod prelude;
 use crate::prelude::*;
-use twba_backup_config::prelude::Config;
-use twba_backup_config::Conf;
 use twba_common::{get_config, init_tracing};
 
 #[tokio::main]
