@@ -57,6 +57,9 @@ impl<'a> FetcherClient<'a> {
             .get_videos_from_login(&user.twitch_id, None)
             .await
             .map_err(FetcherError::GetVideosError)?;
+        let mut count_existing = 0;
+        let mut count_new = 0;
+        let count_total = videos.len();
         for video in videos {
             let existing_video_found = Videos::find()
                 .filter(VideosColumn::TwitchId.eq(video.id.to_string()))
@@ -64,10 +67,16 @@ impl<'a> FetcherClient<'a> {
                 .await?
                 .is_some();
             if existing_video_found {
-                info!("Video with id: {} already exists in the database", video.id);
+                count_existing += 1;
+                trace!("Video with id: {} already exists in the database", video.id);
                 continue;
             }
-            info!("Adding video: {} to the database", video.title);
+            count_new += 1;
+            trace!(
+                "Adding video: {} to the database with title: '{}'",
+                video.id,
+                video.title
+            );
 
             ActiveModel {
                 id: ActiveValue::NotSet,
@@ -91,6 +100,10 @@ impl<'a> FetcherClient<'a> {
             .insert(&self.db)
             .await?;
         }
+        info!(
+            "Added {} new videos for user: '{}'. {}/{} videos already existed",
+            count_new, user.twitch_name, count_existing, count_total
+        );
         Ok(())
     }
 }
