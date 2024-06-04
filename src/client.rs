@@ -34,6 +34,10 @@ impl<'a> FetcherClient<'a> {
             .await?;
         info!("Fetching videos for {} users", users.len());
         for user in users {
+            if self.twitch_client.is_live(&user.twitch_name).await.map_err(FetcherError::CheckLiveError)? {
+                info!("User: {} is live, skipping fetching videos", user.twitch_name);
+                continue;
+            }
             match self.fetch_videos_for_user(&user).await {
                 Ok(_) => {
                     info!("Fetched videos for user: {}", user.twitch_name);

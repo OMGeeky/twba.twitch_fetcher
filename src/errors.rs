@@ -14,4 +14,6 @@ pub enum FetcherError {
     CreateClientError(#[source] Box<dyn StdError>),
     #[error("Could not get videos: {0:?}")]
     GetVideosError(#[source] Box<dyn StdError>),
+    #[error("Could not get videos: {0:?}")]
+    CheckLiveError(#[source] Box<dyn StdError>),
 }
